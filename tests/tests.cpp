@@ -1,3 +1,4 @@
+/*
 MIT License
 
 Copyright (c) 2019 University of Oxford
@@ -19,3 +20,15 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+*/
+
+// This tells Catch to provide a main() - only do this in one cpp file
+#define CATCH_CONFIG_MAIN
+#include "catch.hpp"
+
+#include "univariate_distributions.hpp"
+
+
+TEST_CASE("true means true", "[truth]") {
+  CHECK(zoo::get_a_true_value());
+}
