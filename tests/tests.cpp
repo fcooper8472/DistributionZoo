@@ -30,20 +30,23 @@ SOFTWARE.
 
 #include "univariate_distributions.hpp"
 
-TEMPLATE_TEST_CASE("Normal distribution values", "[normal]", float, double, long double) {
+#define REAL_TYPES float, double, long double
+
+TEMPLATE_TEST_CASE("Beta values", "[beta]", REAL_TYPES) {
 
   const TestType e = std::numeric_limits<TestType>::epsilon() * 1000;
 
-  const TestType mean = 8.9l;
-  const TestType std_dev = 2.3l;
+  const TestType mean = 8.9L;
+  const TestType std_dev = 2.3L;
   zoo::Normal<TestType> dist{mean, std_dev};
 
   // Regular PDF
-  CHECK(dist.pdf(5.0) == Approx(0.041193870680375555223l).epsilon(e));
-  CHECK(dist.pdf(9.6) == Approx(0.16560307708677957936l).epsilon(e));
+  CHECK(dist.pdf(5.0) == Approx(static_cast<TestType>(0.04119387068037555522332L)).epsilon(e));
+  CHECK(dist.pdf(9.6) == Approx(static_cast<TestType>(0.1656030770867795793562L)).epsilon(e));
 
   // Log PDF
-  CHECK(dist.log_pdf(5.0) == Approx(-3.1894658035877918714l).epsilon(e));
-  CHECK(dist.log_pdf(9.6) == Approx(-1.7981614557617049149l).epsilon(e));
+  CHECK(dist.log_pdf(5.0) == Approx(static_cast<TestType>(-3.189465803587791871442L)).epsilon(e));
+  CHECK(dist.log_pdf(9.6) == Approx(static_cast<TestType>(-1.798161455761704914921L)).epsilon(e));
+}
 
 }
