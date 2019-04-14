@@ -49,4 +49,21 @@ TEMPLATE_TEST_CASE("Beta values", "[beta]", REAL_TYPES) {
   CHECK(dist.log_pdf(9.6) == Approx(static_cast<TestType>(-1.798161455761704914921L)).epsilon(e));
 }
 
+TEMPLATE_TEST_CASE("Normal values", "[normal]", REAL_TYPES) {
+
+  const TestType e = std::numeric_limits<TestType>::epsilon() * 1000;
+
+  const TestType alpha = 2.6L;
+  const TestType beta = 4.9L;
+  zoo::Beta<TestType> dist{alpha, beta};
+
+  // Regular PDF
+  CHECK(dist.pdf(-1.0) == Approx(static_cast<TestType>(0.0L)).epsilon(e));
+  CHECK(dist.pdf(0.5) == Approx(static_cast<TestType>(1.399459344806713569240L)).epsilon(e));
+  CHECK(dist.pdf(2.0) == Approx(static_cast<TestType>(0.0L)).epsilon(e));
+
+  // Log PDF
+  CHECK(std::isinf(dist.log_pdf(-1.0)));
+  CHECK(dist.log_pdf(0.5) == Approx(static_cast<TestType>(0.3360859797527134507530L)).epsilon(e));
+  CHECK(std::isinf(dist.log_pdf(2.0)));
 }

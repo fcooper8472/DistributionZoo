@@ -29,15 +29,13 @@ SOFTWARE.
 
 namespace zoo {
 
-template <typename RealType>
-class UnivariateDistribution {
+template <typename RealType> class UnivariateDistribution {
 public:
   virtual RealType pdf(RealType x) = 0;
   virtual RealType log_pdf(RealType x) = 0;
 };
 
-template <typename RealType>
-class Normal : public UnivariateDistribution<RealType> {
+template <typename RealType> class Normal : public UnivariateDistribution<RealType> {
 private:
   // Params
   RealType mMean;
@@ -49,7 +47,7 @@ private:
   RealType mLogPrefactor;
 
 public:
-  explicit Normal(RealType mean = 0.0, RealType std_dev = 1.0)
+  explicit Normal(const RealType mean = 0.0, const RealType std_dev = 1.0)
       : mMean(mean), mStdDev(std_dev) {
 
     // Standard deviation must be positive
@@ -69,6 +67,51 @@ public:
   }
 };
 
+template <typename RealType> class Beta : public UnivariateDistribution<RealType> {
+private:
+  // Params
+  RealType mAlpha;
+  RealType mBeta;
+
+  // Cached constants for Pdf & LogPdf
+  RealType m1OnBetaFn;
+  RealType mLogBetaFn;
+  RealType mAm1;
+  RealType mBm1;
+
+public:
+  explicit Beta(const RealType alpha = 1.0, const RealType beta = 1.0)
+      : mAlpha(alpha), mBeta(beta) {
+
+    // Both params must be positive
+    assert(mAlpha > 0.0);
+    assert(mBeta > 0.0);
+
+    // Constants for Beta function evaluations
+    m1OnBetaFn = std::tgamma(mAlpha + mBeta) / (std::tgamma(mAlpha) * std::tgamma(mBeta));
+    mLogBetaFn = std::lgamma(mAlpha + mBeta) - (std::lgamma(mAlpha) + std::lgamma(mBeta));
+
+    // Other useful constants
+    mAm1 = mAlpha - 1.0;
+    mBm1 = mBeta - 1.0;
+  }
+
+  RealType pdf(const RealType x) override {
+    if (x > 0.0 && x < 1.0) {
+      return std::pow(x, mAm1) * std::pow(1.0 - x, mBm1) * m1OnBetaFn;
+    } else {
+      return 0.0;
+    }
+  }
+
+  RealType log_pdf(const RealType x) override {
+    if (x > 0.0 && x < 1.0) {
+      return mAm1 * std::log(x) + mBm1 * std::log1p(-x) + mLogBetaFn;
+    } else {
+      return -std::numeric_limits<RealType>::infinity();
+    }
+  }
+};
 
 } // namespace zoo
 
