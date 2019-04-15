@@ -48,9 +48,9 @@ set_target_properties(univariate PROPERTIES LINKER_LANGUAGE CXX)
 
 enable_testing()
 
-add_executable(tests tests/tests.cpp)
-target_link_libraries(tests PRIVATE univariate)
-add_test(test tests)
+add_executable(univ_tests tests/tests.cpp)
+target_link_libraries(univ_tests PRIVATE univariate)
+add_test(univ_test univ_tests)
 
 # Clang tidy as optional static analyzer
 option(Zoo_USE_CLANG_TIDY "Use clang tidy for static analysis" OFF)

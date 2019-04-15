@@ -22,8 +22,18 @@ strategy:
 pool:
   vmImage: $(imageName)
 
+variables:
+  build_dir: $(Agent.BuildDirectory)/build
+
 steps:
-  - script: cmake .
+  - script: pwd
+  - script: mkdir $(build_dir)
+  - script: cmake ..
+    workingDirectory: $(build_dir)
   - script: cmake --build . -- -j2
+    workingDirectory: $(build_dir)
   - script: ctest -j2 --output-on-failure
+    workingDirectory: $(build_dir)
+  - script: echo $(Agent.BuildDirectory)
+  - script: echo $(Agent.OS)
 
