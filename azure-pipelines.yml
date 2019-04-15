@@ -24,7 +24,13 @@ pool:
 
 steps:
   - script: echo $(Agent.OS)
-  - script: cmake .
-  - script: cmake --build . -- -j2
-  - script: ctest -j2 --output-on-failure
+    displayName: print os
 
+  - script: cmake .
+    displayName: cmake
+
+  - script: cmake --build .
+    displayName: build
+
+  - script: ctest --output-on-failure
+    displayName: ctest
