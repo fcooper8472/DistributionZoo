@@ -23,5 +23,7 @@ pool:
   vmImage: $(imageName)
 
 steps:
-  - script: echo Hello, world!
-    displayName: 'Run a one-line script'
+  - script: cmake .
+  - script: cmake --build . -- -j2
+  - script: ctest -j2 --output-on-failure
+
