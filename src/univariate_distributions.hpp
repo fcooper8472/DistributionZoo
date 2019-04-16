@@ -29,6 +29,11 @@ SOFTWARE.
 
 namespace zoo {
 
+template <typename RealType>
+constexpr RealType PI() {
+	return static_cast<RealType>(3.14159265358979323846264338L);
+}
+
 template <typename RealType> class UnivariateDistribution {
 public:
   virtual RealType pdf(RealType x) = 0;
@@ -54,8 +59,8 @@ public:
     assert(mStdDev > 0.0);
 
     m2SigSq = 2.0 * mStdDev * mStdDev;
-    mPrefactor = 1.0 / std::sqrt(M_PI * m2SigSq);
-    mLogPrefactor = -0.5 * std::log(M_PI * m2SigSq);
+    mPrefactor = 1.0 / std::sqrt(zoo::PI<RealType>() * m2SigSq);
+    mLogPrefactor = -0.5 * std::log(zoo::PI<RealType>() * m2SigSq);
   }
 
   RealType pdf(const RealType x) override {

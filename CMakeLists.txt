@@ -35,7 +35,7 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake" ${CMAKE_MODULE_PATH})
 
 # Set global compiler warnings
 if (MSVC)
-    add_compile_options(/W3 /WX)
+    add_compile_options(/W1 /WX)
 else ()
     add_compile_options(-Wall -pedantic)
 endif ()
