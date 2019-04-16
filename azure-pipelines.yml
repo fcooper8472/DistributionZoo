@@ -16,8 +16,8 @@ strategy:
       imageName: 'macOS-10.14'
     windows-vs2017:
       imageName: 'vs2017-win2016'
-    windows-vs2019:
-      imageName: 'windows-2019'
+    #windows-vs2019:
+    #  imageName: 'windows-2019'
 
 pool:
   vmImage: $(imageName)
