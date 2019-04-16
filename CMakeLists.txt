@@ -21,7 +21,13 @@
 # SOFTWARE.
 
 cmake_minimum_required(VERSION 3.6)
-project(DistributionZoo)
+
+project(
+	DistributionZoo
+	VERSION 0.1
+	DESCRIPTION "A zoo of univariate distributions."
+	LANGUAGES CXX
+)
 
 # ensure C++17
 set(CMAKE_CXX_STANDARD 17)
@@ -40,11 +46,8 @@ else ()
     add_compile_options(-Wall -pedantic)
 endif ()
 
-add_library(univariate src/univariate_distributions.hpp)
-target_include_directories(univariate PUBLIC src)
-
-set_target_properties(univariate PROPERTIES LINKER_LANGUAGE CXX)
-
+add_library(univariate INTERFACE)
+target_include_directories(univariate INTERFACE src)
 
 enable_testing()
 
