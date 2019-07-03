@@ -29,63 +29,64 @@ SOFTWARE.
 
 namespace zoo {
 
-template <typename RealType>
-constexpr RealType PI() {
-	return static_cast<RealType>(3.14159265358979323846264338L);
-}
-
-template <typename RealType> class UnivariateDistribution {
+template <typename real_t>
+struct K {
 public:
-  virtual RealType pdf(RealType x) = 0;
-  virtual RealType log_pdf(RealType x) = 0;
+  static constexpr real_t PI = static_cast<real_t>(3.14159265358979323846264338L);
 };
 
-template <typename RealType> class Normal : public UnivariateDistribution<RealType> {
+template <typename real_t> class UnivariateDistribution {
+public:
+  virtual real_t pdf(real_t x) = 0;
+  virtual real_t log_pdf(real_t x) = 0;
+};
+
+template <typename real_t> class Normal : public UnivariateDistribution<real_t> {
 private:
   // Params
-  RealType mMean;
-  RealType mStdDev;
+  real_t mMean;
+  real_t mStdDev;
 
   // Cached constants for Pdf & LogPdf
-  RealType m2SigSq;
-  RealType mPrefactor;
-  RealType mLogPrefactor;
+  real_t m2SigSq;
+  real_t mPrefactor;
+  real_t mLogPrefactor;
 
 public:
-  explicit Normal(const RealType mean = 0.0, const RealType std_dev = 1.0)
+  explicit Normal(const real_t mean = 0.0, const real_t std_dev = 1.0)
       : mMean(mean), mStdDev(std_dev) {
 
     // Standard deviation must be positive
     assert(mStdDev > 0.0);
 
     m2SigSq = 2.0 * mStdDev * mStdDev;
-    mPrefactor = 1.0 / std::sqrt(zoo::PI<RealType>() * m2SigSq);
-    mLogPrefactor = -0.5 * std::log(zoo::PI<RealType>() * m2SigSq);
+    mPrefactor = 1.0 / std::sqrt(zoo::K<real_t>::PI * m2SigSq);
+    mLogPrefactor = -0.5 * std::log(zoo::K<real_t>::PI * m2SigSq);
   }
 
-  RealType pdf(const RealType x) override {
+  real_t pdf(const real_t x) override {
     return mPrefactor * std::exp(-(x - mMean) * (x - mMean) / m2SigSq);
   }
 
-  RealType log_pdf(const RealType x) override {
+  real_t log_pdf(const real_t x) override {
     return mLogPrefactor - (x - mMean) * (x - mMean) / m2SigSq;
   }
 };
 
-template <typename RealType> class Beta : public UnivariateDistribution<RealType> {
+template <typename real_t> class Beta : public UnivariateDistribution<real_t> {
 private:
   // Params
-  RealType mAlpha;
-  RealType mBeta;
+  real_t mAlpha;
+  real_t mBeta;
 
   // Cached constants for Pdf & LogPdf
-  RealType m1OnBetaFn;
-  RealType mLogBetaFn;
-  RealType mAm1;
-  RealType mBm1;
+  real_t m1OnBetaFn;
+  real_t mLogBetaFn;
+  real_t mAm1;
+  real_t mBm1;
 
 public:
-  explicit Beta(const RealType alpha = 1.0, const RealType beta = 1.0)
+  explicit Beta(const real_t alpha = 1.0, const real_t beta = 1.0)
       : mAlpha(alpha), mBeta(beta) {
 
     // Both params must be positive
@@ -101,7 +102,7 @@ public:
     mBm1 = mBeta - 1.0;
   }
 
-  RealType pdf(const RealType x) override {
+  real_t pdf(const real_t x) override {
     if (x > 0.0 && x < 1.0) {
       return std::pow(x, mAm1) * std::pow(1.0 - x, mBm1) * m1OnBetaFn;
     } else {
@@ -109,11 +110,11 @@ public:
     }
   }
 
-  RealType log_pdf(const RealType x) override {
+  real_t log_pdf(const real_t x) override {
     if (x > 0.0 && x < 1.0) {
       return mAm1 * std::log(x) + mBm1 * std::log1p(-x) + mLogBetaFn;
     } else {
-      return -std::numeric_limits<RealType>::infinity();
+      return -std::numeric_limits<real_t>::infinity();
     }
   }
 };
