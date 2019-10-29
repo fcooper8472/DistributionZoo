@@ -29,51 +29,46 @@ SOFTWARE.
 
 namespace zoo {
 
-template <typename real_t>
-struct K {
-public:
-  static constexpr real_t PI = static_cast<real_t>(3.14159265358979323846264338L);
-};
+template <class real> constexpr real pi = real{3.14159265358979323846264338L};
 
-template <typename real_t> class UnivariateDistribution {
+template <class real_t> class UnivariateDistribution {
 public:
   virtual real_t pdf(real_t x) = 0;
   virtual real_t log_pdf(real_t x) = 0;
 };
 
-template <typename real_t> class Normal : public UnivariateDistribution<real_t> {
+template <class real> class Normal : public UnivariateDistribution<real> {
 private:
   // Params
-  real_t mMean;
-  real_t mStdDev;
+  real mMean;
+  real mStdDev;
 
   // Cached constants for Pdf & LogPdf
-  real_t m2SigSq;
-  real_t mPrefactor;
-  real_t mLogPrefactor;
+  real m2SigSq;
+  real mPrefactor;
+  real mLogPrefactor;
 
 public:
-  explicit Normal(const real_t mean = 0.0, const real_t std_dev = 1.0)
-      : mMean(mean), mStdDev(std_dev) {
+  explicit Normal(const real mean = 0.0, const real std_dev = 1.0) : mMean(mean), mStdDev(std_dev) {
 
     // Standard deviation must be positive
     assert(mStdDev > 0.0);
 
     m2SigSq = 2.0 * mStdDev * mStdDev;
-    mPrefactor = 1.0 / std::sqrt(zoo::K<real_t>::PI * m2SigSq);
-    mLogPrefactor = -0.5 * std::log(zoo::K<real_t>::PI * m2SigSq);
+    mPrefactor = 1.0 / std::sqrt(zoo::pi<real> * m2SigSq);
+    mLogPrefactor = -0.5 * std::log(zoo::pi<real> * m2SigSq);
   }
 
-  real_t pdf(const real_t x) override {
+  real pdf(const real x) override {
     return mPrefactor * std::exp(-(x - mMean) * (x - mMean) / m2SigSq);
   }
 
-  real_t log_pdf(const real_t x) override {
+  real log_pdf(const real x) override {
     return mLogPrefactor - (x - mMean) * (x - mMean) / m2SigSq;
   }
 };
 
-template <typename real_t> class Beta : public UnivariateDistribution<real_t> {
+template <class real_t> class Beta : public UnivariateDistribution<real_t> {
 private:
   // Params
   real_t mAlpha;
@@ -86,8 +81,7 @@ private:
   real_t mBm1;
 
 public:
-  explicit Beta(const real_t alpha = 1.0, const real_t beta = 1.0)
-      : mAlpha(alpha), mBeta(beta) {
+  explicit Beta(const real_t alpha = 1.0, const real_t beta = 1.0) : mAlpha(alpha), mBeta(beta) {
 
     // Both params must be positive
     assert(mAlpha > 0.0);
