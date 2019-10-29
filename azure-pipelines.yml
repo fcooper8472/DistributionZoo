@@ -8,16 +8,18 @@ trigger:
 
 strategy:
   matrix:
+    ubuntu-18.04:
+      imageName: 'ubuntu-18.04'
     ubuntu-16.04:
       imageName: 'ubuntu-16.04'
-    mac-high-sierra-10.13:
-      imageName: 'macOS-10.13'
-    mac-mojave-10.14:
+    macOS-mojave-10.14:
       imageName: 'macOS-10.14'
+    macOS-high-sierra-10.13:
+      imageName: 'macOS-10.13'
+    windows-vs2019:
+      imageName: 'windows-2019'
     windows-vs2017:
       imageName: 'vs2017-win2016'
-    #windows-vs2019:
-    #  imageName: 'windows-2019'
 
 pool:
   vmImage: $(imageName)
