@@ -31,10 +31,10 @@ namespace zoo {
 
 template <class real> constexpr real pi = real{3.14159265358979323846264338L};
 
-template <class real_t> class UnivariateDistribution {
+template <class real> class UnivariateDistribution {
 public:
-  virtual real_t pdf(real_t x) = 0;
-  virtual real_t log_pdf(real_t x) = 0;
+  virtual real pdf(real x) = 0;
+  virtual real log_pdf(real x) = 0;
 };
 
 template <class real> class Normal : public UnivariateDistribution<real> {
@@ -52,11 +52,11 @@ public:
   explicit Normal(const real mean = 0.0, const real std_dev = 1.0) : mMean(mean), mStdDev(std_dev) {
 
     // Standard deviation must be positive
-    assert(mStdDev > 0.0);
+    assert(mStdDev > real{0.0});
 
-    m2SigSq = 2.0 * mStdDev * mStdDev;
-    mPrefactor = 1.0 / std::sqrt(zoo::pi<real> * m2SigSq);
-    mLogPrefactor = -0.5 * std::log(zoo::pi<real> * m2SigSq);
+    m2SigSq = real{2.0} * mStdDev * mStdDev;
+    mPrefactor = real{1.0} / std::sqrt(zoo::pi<real> * m2SigSq);
+    mLogPrefactor = real{-0.5} * std::log(zoo::pi<real> * m2SigSq);
   }
 
   real pdf(const real x) override {
@@ -68,47 +68,47 @@ public:
   }
 };
 
-template <class real_t> class Beta : public UnivariateDistribution<real_t> {
+template <class real> class Beta : public UnivariateDistribution<real> {
 private:
   // Params
-  real_t mAlpha;
-  real_t mBeta;
+  real mAlpha;
+  real mBeta;
 
   // Cached constants for Pdf & LogPdf
-  real_t m1OnBetaFn;
-  real_t mLogBetaFn;
-  real_t mAm1;
-  real_t mBm1;
+  real m1OnBetaFn;
+  real mLogBetaFn;
+  real mAm1;
+  real mBm1;
 
 public:
-  explicit Beta(const real_t alpha = 1.0, const real_t beta = 1.0) : mAlpha(alpha), mBeta(beta) {
+  explicit Beta(const real alpha = 1.0, const real beta = 1.0) : mAlpha(alpha), mBeta(beta) {
 
     // Both params must be positive
-    assert(mAlpha > 0.0);
-    assert(mBeta > 0.0);
+    assert(mAlpha > real{0.0});
+    assert(mBeta > real{0.0});
 
     // Constants for Beta function evaluations
     m1OnBetaFn = std::tgamma(mAlpha + mBeta) / (std::tgamma(mAlpha) * std::tgamma(mBeta));
     mLogBetaFn = std::lgamma(mAlpha + mBeta) - (std::lgamma(mAlpha) + std::lgamma(mBeta));
 
     // Other useful constants
-    mAm1 = mAlpha - 1.0;
-    mBm1 = mBeta - 1.0;
+    mAm1 = mAlpha - real{1.0};
+    mBm1 = mBeta - real{1.0};
   }
 
-  real_t pdf(const real_t x) override {
-    if (x > 0.0 && x < 1.0) {
-      return std::pow(x, mAm1) * std::pow(1.0 - x, mBm1) * m1OnBetaFn;
+  real pdf(const real x) override {
+    if (x > real{0.0} && x < real{1.0}) {
+      return std::pow(x, mAm1) * std::pow(real{1.0} - x, mBm1) * m1OnBetaFn;
     } else {
-      return 0.0;
+      return real{0.0};
     }
   }
 
-  real_t log_pdf(const real_t x) override {
-    if (x > 0.0 && x < 1.0) {
+  real log_pdf(const real x) override {
+    if (x > real{0.0} && x < real{1.0}) {
       return mAm1 * std::log(x) + mBm1 * std::log1p(-x) + mLogBetaFn;
     } else {
-      return -std::numeric_limits<real_t>::infinity();
+      return -std::numeric_limits<real>::infinity();
     }
   }
 };
