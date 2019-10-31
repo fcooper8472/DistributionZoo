@@ -10,16 +10,26 @@ strategy:
   matrix:
     ubuntu-18.04:
       imageName: 'ubuntu-18.04'
+      cmakeConfigArgs: ''
     ubuntu-16.04:
       imageName: 'ubuntu-16.04'
+      cmakeConfigArgs: ''
+    ubuntu-coverage:
+      imageName: 'ubuntu-18.04'
+      cmakeConfigArgs: '-DZoo_ENABLE_COVERAGE:BOOL=TRUE'
+      jobType: 'coverage'
     macOS-mojave-10.14:
       imageName: 'macOS-10.14'
+      cmakeConfigArgs: ''
     macOS-high-sierra-10.13:
       imageName: 'macOS-10.13'
+      cmakeConfigArgs: ''
     windows-vs2019:
       imageName: 'windows-2019'
+      cmakeConfigArgs: ''
     windows-vs2017:
       imageName: 'vs2017-win2016'
+      cmakeConfigArgs: ''
 
 pool:
   vmImage: $(imageName)
@@ -28,11 +38,27 @@ steps:
   - script: echo $(Agent.OS)
     displayName: print os
 
-  - script: cmake .
+  - task: CMake@1
+    inputs:
+      workingDirectory: build
+      cmakeArgs: .. $(cmakeConfigArgs)
     displayName: cmake
 
-  - script: cmake --build .
+  - task: CMake@1
+    inputs:
+      workingDirectory: build
+      cmakeArgs: --build .
     displayName: build
 
   - script: ctest --output-on-failure
+    workingDirectory: build
     displayName: ctest
+
+  - script: |
+      lcov --directory . --capture --output-file coverage.info
+      lcov --remove coverage.info '/usr/*' '*/tests/*' --output-file coverage.info
+      lcov --list coverage.info
+      bash <(curl https://codecov.io/bash) -f coverage.info -t be8b13ee-03bd-4ae7-9e96-89b70917fd7d
+    displayName: Upload coverage
+    workingDirectory: build
+    condition: eq(variables['jobType'], 'coverage')

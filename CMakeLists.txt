@@ -23,10 +23,10 @@
 cmake_minimum_required(VERSION 3.6)
 
 project(
-	DistributionZoo
-	VERSION 0.1
-	DESCRIPTION "A zoo of univariate distributions."
-	LANGUAGES CXX
+    DistributionZoo
+    VERSION 0.1
+    DESCRIPTION "A zoo of univariate distributions."
+    LANGUAGES CXX
 )
 
 # ensure C++17
@@ -79,8 +79,8 @@ if (Zoo_MEMCHECK)
                 -fsanitize=address
                 -fsanitize-address-use-after-scope
                 )
-        target_compile_options(univariate PUBLIC -O1 -g -fno-omit-frame-pointer ${Zoo_MEMCHECK_FLAGS})
-        target_link_libraries(univariate PUBLIC -g ${Zoo_MEMCHECK_FLAGS})
+        target_compile_options(univariate INTERFACE -O1 -g -fno-omit-frame-pointer ${Zoo_MEMCHECK_FLAGS})
+        target_link_libraries(univariate INTERFACE -g ${Zoo_MEMCHECK_FLAGS})
     else ()
         message(FATAL_ERROR "clang compiler required with Zoo_MEMCHECK: found ${CMAKE_CXX_COMPILER_ID}")
     endif ()
@@ -91,8 +91,8 @@ option(Zoo_ENABLE_COVERAGE "Enable coverage reporting for GCC or Clang" FALSE)
 if (Zoo_ENABLE_COVERAGE)
     if (${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_CXX_COMPILER_ID} STREQUAL "Clang")
         message(STATUS "Configuring with coverage")
-        target_compile_options(univariate PUBLIC --coverage -O0)
-        target_link_libraries(univariate PUBLIC --coverage)
+        target_compile_options(univariate INTERFACE --coverage -O0)
+        target_link_libraries(univariate INTERFACE --coverage)
     else ()
         message(FATAL_ERROR "GCC or Clang required with Zoo_ENABLE_COVERAGE: found ${CMAKE_CXX_COMPILER_ID}")
     endif ()
