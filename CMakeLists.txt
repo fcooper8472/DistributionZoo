@@ -49,11 +49,23 @@ endif ()
 add_library(cts_univ INTERFACE)
 target_include_directories(cts_univ INTERFACE continuous_univariate)
 
+add_library(dsc_univ INTERFACE)
+target_include_directories(dsc_univ INTERFACE discrete_univariate)
+
 enable_testing()
 
-add_executable(cts_univ_tests tests/continuous_univariate_tests.cpp)
-target_link_libraries(cts_univ_tests PRIVATE cts_univ)
-add_test(continuous_univariate_tests cts_univ_tests)
+
+set(
+        TEST_FILES
+        tests/tests_main.cpp
+        tests/continuous_univariate_tests.cpp
+        tests/discrete_univariate_tests.cpp
+)
+
+add_executable(tests ${TEST_FILES})
+target_link_libraries(tests PRIVATE cts_univ)
+target_link_libraries(tests PRIVATE dsc_univ)
+add_test(tests tests)
 
 # Clang tidy as optional static analyzer
 option(Zoo_USE_CLANG_TIDY "Use clang tidy for static analysis" OFF)
@@ -81,6 +93,9 @@ if (Zoo_MEMCHECK)
                 )
         target_compile_options(cts_univ INTERFACE -O1 -g -fno-omit-frame-pointer ${Zoo_MEMCHECK_FLAGS})
         target_link_libraries(cts_univ INTERFACE -g ${Zoo_MEMCHECK_FLAGS})
+
+        target_compile_options(dsc_univ INTERFACE -O1 -g -fno-omit-frame-pointer ${Zoo_MEMCHECK_FLAGS})
+        target_link_libraries(dsc_univ INTERFACE -g ${Zoo_MEMCHECK_FLAGS})
     else ()
         message(FATAL_ERROR "clang compiler required with Zoo_MEMCHECK: found ${CMAKE_CXX_COMPILER_ID}")
     endif ()
@@ -93,6 +108,9 @@ if (Zoo_ENABLE_COVERAGE)
         message(STATUS "Configuring with coverage")
         target_compile_options(cts_univ INTERFACE --coverage -O0)
         target_link_libraries(cts_univ INTERFACE --coverage)
+
+        target_compile_options(dsc_univ INTERFACE --coverage -O0)
+        target_link_libraries(dsc_univ INTERFACE --coverage)
     else ()
         message(FATAL_ERROR "GCC or Clang required with Zoo_ENABLE_COVERAGE: found ${CMAKE_CXX_COMPILER_ID}")
     endif ()
