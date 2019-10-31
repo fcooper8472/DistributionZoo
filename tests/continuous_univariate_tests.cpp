@@ -28,7 +28,7 @@ SOFTWARE.
 
 #include <limits>
 
-#include "univariate_distributions.hpp"
+#include "continuous_univariate.hpp"
 
 #define REAL_TYPES float, double, long double
 

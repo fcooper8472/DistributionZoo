@@ -1,7 +1,7 @@
 ---
 Checks: '-*,bugprone-*,cert-*,-cert-err60-cpp,cppcoreguidelines-*,clang-analyzer-*,hicpp-*,misc-*,modernize-*,mpi-*,performance-*,portability-*,readability-*'
 WarningsAsErrors: ''
-HeaderFilterRegex: 'src\/.*.h'
+HeaderFilterRegex: 'continuous_univariate\/.*.h'
 AnalyzeTemporaryDtors: false
 CheckOptions:
   - key:             bugprone-argument-comment.StrictMode

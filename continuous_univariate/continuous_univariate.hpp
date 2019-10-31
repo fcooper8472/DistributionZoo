@@ -22,8 +22,8 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#ifndef UNIVARIATE_DISTRIBUTIONS_HPP_
-#define UNIVARIATE_DISTRIBUTIONS_HPP_
+#ifndef CONTINUOUS_UNIVARIATE_HPP_
+#define CONTINUOUS_UNIVARIATE_HPP_
 
 #include <cmath>
 
@@ -31,13 +31,13 @@ namespace zoo {
 
 template <class real> constexpr real pi = real{3.14159265358979323846264338L};
 
-template <class real> class UnivariateDistribution {
+template <class real> class ContinuousUnivariate {
 public:
   virtual real pdf(real x) = 0;
   virtual real log_pdf(real x) = 0;
 };
 
-template <class real> class Normal : public UnivariateDistribution<real> {
+template <class real> class Normal : public ContinuousUnivariate<real> {
 private:
   // Params
   real mMean;
@@ -68,7 +68,7 @@ public:
   }
 };
 
-template <class real> class Beta : public UnivariateDistribution<real> {
+template <class real> class Beta : public ContinuousUnivariate<real> {
 private:
   // Params
   real mAlpha;
@@ -115,4 +115,4 @@ public:
 
 } // namespace zoo
 
-#endif // UNIVARIATE_DISTRIBUTIONS_HPP_
+#endif // CONTINUOUS_UNIVARIATE_HPP_
