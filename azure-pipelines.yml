@@ -55,6 +55,7 @@ steps:
     displayName: ctest
 
   - script: |
+      sudo apt install lcov
       lcov --directory . --capture --output-file coverage.info
       lcov --remove coverage.info '/usr/*' '*/tests/*' --output-file coverage.info
       lcov --list coverage.info
