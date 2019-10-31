@@ -1,0 +1,12 @@
+component_depth: 1
+languages:
+  - name: cpp
+    production:
+      exclude:
+        - /tests/.*\.cpp
+        - /tests/catch.hpp
+    test:
+      include:
+        - /tests/.*\.cpp
+      exclude:
+        - /tests/catch.hpp
