@@ -32,7 +32,7 @@ SOFTWARE.
 
 #define REAL_TYPES float, double, long double
 
-TEMPLATE_TEST_CASE("Beta values", "[beta]", REAL_TYPES) {
+TEMPLATE_TEST_CASE("Normal values", "[normal]", REAL_TYPES) {
 
   const TestType e = std::numeric_limits<TestType>::epsilon() * 1000;
 
@@ -49,17 +49,19 @@ TEMPLATE_TEST_CASE("Beta values", "[beta]", REAL_TYPES) {
   CHECK(dist.log_pdf(9.6) == Approx(TestType{-1.798161455761704914921L}).epsilon(e));
 
   // Sample
+  const TestType big_e{0.1};
   const std::size_t n = 10001;
   auto sample = dist.randn(n);
 
   const auto [mean, var] = zoo::moments(sample);
-  std::cout << mean << std::endl;
-  std::cout << var << std::endl;
+  CHECK(mean == Approx(dist_mean).epsilon(big_e));
+  CHECK(var == Approx(dist_std_dev * dist_std_dev).epsilon(big_e));
+
   const auto median = zoo::median(sample);
-  std::cout << median << std::endl;
+  CHECK(median == Approx(dist_mean).epsilon(big_e));
 }
 
-TEMPLATE_TEST_CASE("Normal values", "[normal]", REAL_TYPES) {
+TEMPLATE_TEST_CASE("Beta values", "[beta]", REAL_TYPES) {
 
   const TestType e = std::numeric_limits<TestType>::epsilon() * 1000;
 
@@ -76,4 +78,20 @@ TEMPLATE_TEST_CASE("Normal values", "[normal]", REAL_TYPES) {
   CHECK(std::isinf(dist.log_pdf(-1.0)));
   CHECK(dist.log_pdf(0.5) == Approx(TestType{0.3360859797527134507530L}).epsilon(e));
   CHECK(std::isinf(dist.log_pdf(2.0)));
+
+  // Sample
+  const TestType big_e{0.1};
+  const std::size_t n = 10001;
+  auto sample = dist.randn(n);
+
+  const auto [mean, var] = zoo::moments(sample);
+  CHECK(mean == Approx(alpha / (alpha + beta)).epsilon(big_e));
+
+  const auto hand_var =
+      alpha * beta / ((alpha + beta) * (alpha + beta) * (alpha + beta + TestType{1.0}));
+  CHECK(var == Approx(hand_var).epsilon(big_e));
+
+  const auto median = zoo::median(sample);
+  const auto hand_median = (alpha - TestType{1.0/3.0}) / (alpha + beta - TestType{2.0 / 3.0});
+  CHECK(median == Approx(hand_median).epsilon(big_e));
 }
