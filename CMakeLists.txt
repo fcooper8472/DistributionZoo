@@ -63,6 +63,7 @@ set(
         tests/tests_main.cpp
         tests/continuous_univariate_tests.cpp
         tests/discrete_univariate_tests.cpp
+        tests/zoo_util_tests.cpp
 )
 
 add_executable(tests ${TEST_FILES})
