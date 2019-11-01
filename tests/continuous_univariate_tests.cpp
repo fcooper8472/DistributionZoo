@@ -24,42 +24,13 @@ SOFTWARE.
 
 #include "catch.hpp"
 
-#include <limits>
 #include <iostream>
+#include <limits>
 
 #include "continuous_univariate.hpp"
 #include "zoo_util.hpp"
 
 #define REAL_TYPES float, double, long double
-
-TEMPLATE_TEST_CASE("Normal values", "[normal]", REAL_TYPES) {
-
-  const TestType e = std::numeric_limits<TestType>::epsilon() * 1000;
-
-  const TestType dist_mean{8.9L};
-  const TestType dist_std_dev{2.3L};
-  zoo::Normal<TestType> dist{dist_mean, dist_std_dev};
-
-  // Regular PDF
-  CHECK(dist.pdf(5.0) == Approx(TestType{0.04119387068037555522332L}).epsilon(e));
-  CHECK(dist.pdf(9.6) == Approx(TestType{0.1656030770867795793562L}).epsilon(e));
-
-  // Log PDF
-  CHECK(dist.log_pdf(5.0) == Approx(TestType{-3.189465803587791871442L}).epsilon(e));
-  CHECK(dist.log_pdf(9.6) == Approx(TestType{-1.798161455761704914921L}).epsilon(e));
-
-  // Sample
-  const TestType big_e{0.1};
-  const std::size_t n = 10001;
-  auto sample = dist.randn(n);
-
-  const auto [mean, var] = zoo::moments(sample);
-  CHECK(mean == Approx(dist_mean).epsilon(big_e));
-  CHECK(var == Approx(dist_std_dev * dist_std_dev).epsilon(big_e));
-
-  const auto median = zoo::median(sample);
-  CHECK(median == Approx(dist_mean).epsilon(big_e));
-}
 
 TEMPLATE_TEST_CASE("Beta values", "[beta]", REAL_TYPES) {
 
@@ -92,6 +63,35 @@ TEMPLATE_TEST_CASE("Beta values", "[beta]", REAL_TYPES) {
   CHECK(var == Approx(hand_var).epsilon(big_e));
 
   const auto median = zoo::median(sample);
-  const auto hand_median = (alpha - TestType{1.0/3.0}) / (alpha + beta - TestType{2.0 / 3.0});
+  const auto hand_median = (alpha - TestType{1.0 / 3.0}) / (alpha + beta - TestType{2.0 / 3.0});
   CHECK(median == Approx(hand_median).epsilon(big_e));
+}
+
+TEMPLATE_TEST_CASE("Normal values", "[normal]", REAL_TYPES) {
+
+  const TestType e = std::numeric_limits<TestType>::epsilon() * 1000;
+
+  const TestType dist_mean{8.9L};
+  const TestType dist_std_dev{2.3L};
+  zoo::Normal<TestType> dist{dist_mean, dist_std_dev};
+
+  // Regular PDF
+  CHECK(dist.pdf(5.0) == Approx(TestType{0.04119387068037555522332L}).epsilon(e));
+  CHECK(dist.pdf(9.6) == Approx(TestType{0.1656030770867795793562L}).epsilon(e));
+
+  // Log PDF
+  CHECK(dist.log_pdf(5.0) == Approx(TestType{-3.189465803587791871442L}).epsilon(e));
+  CHECK(dist.log_pdf(9.6) == Approx(TestType{-1.798161455761704914921L}).epsilon(e));
+
+  // Sample
+  const TestType big_e{0.1};
+  const std::size_t n = 10001;
+  auto sample = dist.randn(n);
+
+  const auto [mean, var] = zoo::moments(sample);
+  CHECK(mean == Approx(dist_mean).epsilon(big_e));
+  CHECK(var == Approx(dist_std_dev * dist_std_dev).epsilon(big_e));
+
+  const auto median = zoo::median(sample);
+  CHECK(median == Approx(dist_mean).epsilon(big_e));
 }
