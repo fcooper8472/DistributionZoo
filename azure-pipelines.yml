@@ -21,6 +21,7 @@ strategy:
       cmakeConfigArgs: '-DZoo_ENABLE_COVERAGE:BOOL=TRUE'
       installDeps: 'apt'
       aptDeps: 'lcov'
+      jobType: 'coverage'
     macOS-mojave-10.14:
       imageName: 'macOS-10.14'
       cmakeConfigArgs: ''
