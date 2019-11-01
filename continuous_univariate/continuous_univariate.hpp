@@ -26,15 +26,29 @@ SOFTWARE.
 #define CONTINUOUS_UNIVARIATE_HPP_
 
 #include <cmath>
+#include <random>
+#include <vector>
 
 namespace zoo {
 
 template <class real> constexpr real pi = real{3.14159265358979323846264338L};
 
 template <class real> class ContinuousUnivariate {
+private:
+  std::random_device mRd{};
+protected:
+  std::mt19937 mMt{mRd()};
 public:
   virtual real pdf(real x) = 0;
   virtual real log_pdf(real x) = 0;
+  virtual real rand() = 0;
+  virtual std::vector<real> randn(std::size_t n) {
+    std::vector<real> sample(n);
+    for (auto &x : sample) {
+      x = this->rand();
+    }
+    return sample;
+  }
 };
 
 template <class real> class Normal : public ContinuousUnivariate<real> {
@@ -42,6 +56,9 @@ private:
   // Params
   real mMean;
   real mStdDev;
+
+  // Dist
+  std::normal_distribution<real> mDist;
 
   // Cached constants for Pdf & LogPdf
   real m2SigSq;
@@ -53,6 +70,8 @@ public:
 
     // Standard deviation must be positive
     assert(mStdDev > real{0.0});
+
+    mDist = std::normal_distribution<real>{mMean, mStdDev};
 
     m2SigSq = real{2.0} * mStdDev * mStdDev;
     mPrefactor = real{1.0} / std::sqrt(zoo::pi<real> * m2SigSq);
@@ -66,6 +85,8 @@ public:
   real log_pdf(const real x) override {
     return mLogPrefactor - (x - mMean) * (x - mMean) / m2SigSq;
   }
+
+  real rand() override { return mDist(this->mMt); }
 };
 
 template <class real> class Beta : public ContinuousUnivariate<real> {
@@ -73,6 +94,10 @@ private:
   // Params
   real mAlpha;
   real mBeta;
+
+  // Dists
+  std::gamma_distribution<real> mDistX;
+  std::gamma_distribution<real> mDistY;
 
   // Cached constants for Pdf & LogPdf
   real m1OnBetaFn;
@@ -86,6 +111,9 @@ public:
     // Both params must be positive
     assert(mAlpha > real{0.0});
     assert(mBeta > real{0.0});
+
+    mDistX = std::gamma_distribution<real>{mAlpha, real{1.0}};
+    mDistY = std::gamma_distribution<real>{mBeta, real{1.0}};
 
     // Constants for Beta function evaluations
     m1OnBetaFn = std::tgamma(mAlpha + mBeta) / (std::tgamma(mAlpha) * std::tgamma(mBeta));
@@ -110,6 +138,12 @@ public:
     } else {
       return -std::numeric_limits<real>::infinity();
     }
+  }
+
+  real rand() override {
+    const real x = mDistX(this->mMt);
+    const real y = mDistY(this->mMt);
+    return x / (x + y);
   }
 };
 
